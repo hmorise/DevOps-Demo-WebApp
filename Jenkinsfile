@@ -56,14 +56,14 @@ pipeline {
         stage('Store the Artifacts') {
             steps {
                 script{
-                    // Get Artifactory server instance, defined in the Artifactory Plugin administration page.
+                    // Jenkins Configuration, Artifactory instance name
                     def server = Artifactory.server "Artifactory"
                     def rtMaven = Artifactory.newMavenBuild()
                     def buildInfo = Artifactory.newBuildInfo()
                 
-                        // Tool name from Jenkins configuration
+                        // Jenkins configuration Tool Name
                         rtMaven.tool = "Maven 3.6.3"
-                        // Set Artifactory repositories for dependencies resolution and artifacts deployment.
+
                         rtMaven.deployer releaseRepo:'libs-release-local', snapshotRepo:'libs-snapshot-local', server: server
                         rtMaven.resolver releaseRepo:'libs-release', snapshotRepo:'libs-snapshot', server: server
                         rtMaven.deployer.deployArtifacts = false
