@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-        stage('Maven build') {
+        stage('maven build') {
             steps {
                 echo 'building...'
                 sh 'mvn clean install'
@@ -82,6 +82,22 @@ pipeline {
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test Report', reportTitles: ''])
             }
         }     
+        
+        //TODO: Performance Test Blazemeter step
+        
+        stage ('Prod Deploy') {
+            steps {
+                echo 'Deploying the war file to Prod'
+                deploy adapters: [tomcat8(url: 'http://52.230.107.151:8080/', credentialsId: 'tomcat')], war: '**/*.war', contextPath: '/ProdWebapp'
+            }
+        }
+        
+        stage('Sanity test') {
+            steps {
+                sh 'mvn -f Acceptancetest/pom.xml test'
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test Report', reportTitles: ''])
+            }
+        }    
         
         
 
